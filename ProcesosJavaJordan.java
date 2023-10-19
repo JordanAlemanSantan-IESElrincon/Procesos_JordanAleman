@@ -2,12 +2,8 @@ import java.io.IOException;
 import java.util.Arrays;
 
 public class ProcesosJavaJordan {
-    public static void main(String[] args) {
-        if (args.length <= 0) {
-            System.out.println("Debe indicarse comando a ejecutar: ");
-            System.exit(1);
-        }
 
+    static void ejecutarComando(String[] args) throws IOException, InterruptedException {
         // Este comando deja preparado la posible ejecución de un proceso que le
         // pasaremos por agumento.
         // Por ejemplo, podemo pasarlo por argumento algo como
@@ -30,19 +26,41 @@ public class ProcesosJavaJordan {
 
         int codRet = 0;
 
+        Process p = pb.start();
+        System.out.println("Yo debería aparecer siempre primero");
+
+        // Con `waitFor()`, mientras el proceso esté en ejecución el resto del código
+        // quedará en espera hasta que finalice dicho proceso
+        codRet = p.waitFor();
+        System.out.println("¿En qué momento aparezco?");
+
+        System.out.println("La ejecución de " + Arrays.toString(args)
+                + " devuelve " + codRet
+                + " " + (codRet == 0 ? "(ejecución correcta)" : "(ERROR)"));
+
+    }
+
+    static void ejecutarComandoyComprueba(String[] args) {
+
+    }
+
+    private static String[] extraerRango(String[] args) {
+        return Arrays.copyOfRange(args, 1, args.length);
+    }
+
+    public static void main(String[] args) {
+        if (args.length <= 0) {
+            System.out.println("Debe indicarse comando a ejecutar: ");
+            System.exit(1);
+        }
+
         try {
+            switch (args[0]) {
+                case "1" -> ejecutarComando(extraerRango(args));
+                case "2" -> ejecutarComandoyComprueba(extraerRango(args));
+                default -> System.out.println("Mu mal");
+            }
 
-            Process p = pb.start();
-            System.out.println("Yo debería aparecer siempre primero");
-
-            // Con `waitFor()`, mientras el proceso esté en ejecución el resto del código
-            // quedará en espera hasta que finalice dicho proceso
-            codRet = p.waitFor();
-            System.out.println("¿En qué momento aparezco?");
-
-            System.out.println("La ejecución de " + Arrays.toString(args)
-                    + " devuelve " + codRet
-                    + " " + (codRet == 0 ? "(ejecución correcta)" : "(ERROR)"));
         } catch (IOException e) {
             System.err.println("Error durante ejecución del proceso");
             System.err.println("Información detallada");
